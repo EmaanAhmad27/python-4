@@ -23,3 +23,22 @@ fruits[1] = ("blueberry")
 print (fruits)
 
 #Write a program that takes a list of student names as input, sorts the names in alphabetical order, and prints the sorted list.
+students:list = ["momna","amna","emaan","aswah","anveesha","rida"]
+arranged_list = sorted(students)
+print (arranged_list)
+
+#Write a program that takes a list of integers and prints:
+#The first 3 elements
+#The last 2 elements
+#The entire list in reverse order
+nums1:list = [10,11,12,13,14,15]
+print(nums1[:3])
+print (nums1[-2:])
+nums1.reverse ()
+print (nums1)
+
+#Write a Python program that removes all duplicates from a given list and prints the new list without duplicates.
+stationary:list = ["pen", "paper", "ink", "paper","notepad"]
+new_list = list(set(stationary))
+print (new_list)
+                   
