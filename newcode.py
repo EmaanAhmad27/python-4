@@ -41,4 +41,31 @@ print (nums1)
 stationary:list = ["pen", "paper", "ink", "paper","notepad"]
 new_list = list(set(stationary))
 print (new_list)
-                   
+
+#Create a dictionary where the keys are the names of 5 different countries and the values are their capitals. Write a program to display all the countries and their capitals.
+capitals_of_countries = {
+    "Pakistan": "Islamabad",
+    "Japan": "Tokyo",
+    "Germany": "Berlin",
+    "India": "Delhi",
+    "Iran": "Tehran",
+} 
+for country, capital in capitals_of_countries.items():
+    print (f"The capital of {country} is {capital}")      
+    
+#Write a program to update the 'grade' value to 'A', and add a new key-value pair for 'major' with the value 'Computer Science'.
+student = {'name': 'John', 'age': 22, 'grade': 'B'}
+student['grade'] = 'A'
+print (student)
+student['major'] = 'computer science'
+print (student)
+
+#Write a program that creates a dictionary where the keys are subjects (e.g., 'Math', 'Science') and the values are lists of marks. Add marks for 3 subjects, and print the average marks for each subject.
+Marks = {'math': 77, 'science': 89,}
+Marks.update ({'physics': 98, 'chemistry': 65, 'biology': 95})
+print (Marks)
+total_marks = sum (Marks.values())
+total_subjects = len (Marks)
+Average_result = total_marks/ total_subjects
+print(Average_result)
+
