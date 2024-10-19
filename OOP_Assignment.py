@@ -25,7 +25,7 @@ class Departments:
     def get_students(self):
         return [student.get_details() for student in self.students]
     def get_teachers(self):
-        return [teacher.name for teacher in self.teachers]
+        return [teacher.get_details() for teacher in self.teachers]
 math_department = Departments("Mathematics")
 eng_department = Departments("English")
 sci_department = Departments("Science")
@@ -121,16 +121,39 @@ sci_department.add_teacher(teacher8)
 print("\nComputer Science Department Teachers:")
 for teacher in cs_department.get_teachers():
     print(f"  {teacher}")
-
 print("\nMathematics Department Teachers:")
 for teacher in math_department.get_teachers():
     print(f"  {teacher}")
 print("\nEnglish Department Teachers:")
 for teacher in eng_department.get_teachers():
     print(f"  {teacher}")
-
 print("\nScience Department Teachers:")
 for teacher in sci_department.get_teachers():
     print(f"  {teacher}")
-   
+class Admin (Humans):
+    def __init__(self, name, age, gender, admin_id, admin_role):
+        super().__init__(name,age,gender)
+        self.admin_id = admin_id
+        self.admin_role = admin_role
+    def get_details(self):
+        return {
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender,
+            'admin_id': self.admin_id,
+            'admin_role': self.admin_role
+        }
+admin1 = Admin(name="Meharbano", age=35, gender="Female", admin_id="A001", admin_role="Registrar")
+admin2 = Admin(name="Adeel Akram", age=40, gender="Male", admin_id="A002", admin_role="HR Manager")
+admin3 = Admin(name="Samia Shakeel", age=30, gender="Female", admin_id="A003", admin_role="Admissions Officer")
+admin4 = Admin(name="Taimoor Gillani", age=50, gender="Male", admin_id="A004", admin_role="Finance Officer")
+admin5 = Admin(name="Komal Mumtaz", age=45, gender="Female", admin_id="A005", admin_role="Dean's Assistant")
+admin6 = Admin(name="Haris Rouf", age=38, gender="Male", admin_id="A006", admin_role="IT Administrator")
+admin7 = Admin(name="Rabia Zahid", age=32, gender="Female", admin_id="A007", admin_role="Facilities Manager")
+admin8 = Admin(name="Bilal Sikander", age=55, gender="Male", admin_id="A008", admin_role="Director of Operations")
+admins = [admin1, admin2, admin3, admin4, admin5, admin6, admin7, admin8]
+print("\nAdmin Details:")
+for admin in admins:
+    details = admin.get_details()
+    print(details)   
         
