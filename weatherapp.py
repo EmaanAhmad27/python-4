@@ -100,9 +100,10 @@ df.index = df.index + 1
 df.index.name = "No."
 
 # Streamlit display setup
-st.title("🌍 Current Weather in Major Cities of Pakistan")
+st.title("🌍Current Weather in Major Cities of Pakistan")
 
-search_city = st.text_input("Search for a city")
+st.markdown("<h4 style='font-weight:bold; font-size:20px;'>Search for a City</h4>", unsafe_allow_html=True)
+search_city = st.text_input("")  # Empty label for input
 
 # Filter the DataFrame based on user input
 if search_city:
