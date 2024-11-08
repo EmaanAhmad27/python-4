@@ -121,7 +121,7 @@ df['No.'] = range(1, len(df) + 1)
 df = df[['No.', 'City', 'Temperature (°C)', 'Weather Condition']]
 
 # Streamlit display setup
-st.title("🌍Current Weather in Major Cities of Pakistan")
+st.title("🌍Current Weather in Some Cities of the World")
 
 st.markdown("<h4 style='font-weight:bold; font-size:20px;'>Search for a City</h4>", unsafe_allow_html=True)
 search_city = st.text_input("")  # Empty label for input
