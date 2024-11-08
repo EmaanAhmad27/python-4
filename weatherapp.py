@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import streamlit as st
 import pandas as pd
+
 city_urls = {
     "New York": "https://www.bbc.com/weather/5128581",
     "Faisalabad": "https://www.bbc.com/weather/1179400",
@@ -34,7 +35,9 @@ city_urls = {
     "Dammam": "https://www.bbc.com/weather/110336",
     "Istanbul": "https://www.bbc.com/weather/745044",
 }
+
 all_city_data = []
+
 for city, url in city_urls.items():
     try:
         response = requests.get(url)
@@ -69,9 +72,10 @@ for city, url in city_urls.items():
         elif "wind" in condition or "windy" in condition:
             condition_with_icon = "💨" + condition
         elif "breeze" in condition:
-            condition_with_icon = "🌬️" + condition
+            condition_with_icon = "🌬️ " + condition
         else:
             condition_with_icon = condition  
+        
         all_city_data.append({
             "City": city_name,
             "Temperature (°C)": temperature,
@@ -86,23 +90,33 @@ for city, url in city_urls.items():
         })
 df = pd.DataFrame(all_city_data)
 df["Temperature (°C)"] = pd.to_numeric(df["Temperature (°C)"].str.extract(r'(-?\d+)')[0], errors='coerce')
-df = df.sort_values(by="Temperature (°C)", ascending=False, na_position='last')
-df = df.reset_index(drop=True)
-df['No.'] = range(1, len(df) + 1)
-df = df[['No.', 'City', 'Temperature (°C)', 'Weather Condition']]
 st.title("🌍Current Weather in Some Cities of the World")
 st.markdown("<h4 style='font-weight:bold; font-size:20px;'>Search for a City</h4>", unsafe_allow_html=True)
-search_city = st.text_input("")  
+search_city = st.text_input("")
+st.markdown("<h4 style='font-weight:bold; font-size:20px;'>Sort by</h4>", unsafe_allow_html=True)
+sort_option = st.selectbox("", ["Temperature: High to Low", "Temperature: Low to High", "City: A to Z", "City: Z to A"])
 if search_city:
     filtered_df = df[df["City"].str.contains(search_city, case=False, na=False)]
 else:
     filtered_df = df
+if sort_option == "Temperature: High to Low":
+    filtered_df = filtered_df.sort_values(by="Temperature (°C)", ascending=False, na_position='last')
+elif sort_option == "Temperature: Low to High":
+    filtered_df = filtered_df.sort_values(by="Temperature (°C)", ascending=True, na_position='last')
+elif sort_option == "City: A to Z":
+    filtered_df = filtered_df.sort_values(by="City", ascending=True)
+elif sort_option == "City: Z to A":
+    filtered_df = filtered_df.sort_values(by="City", ascending=False)
+filtered_df = filtered_df.reset_index(drop=True)
+filtered_df['No.'] = range(1, len(filtered_df) + 1)
+filtered_df = filtered_df[['No.', 'City', 'Temperature (°C)', 'Weather Condition']]
 html_rows = ""
 for index, row in filtered_df.iterrows():
     city_cell = f"<td style='background-color: yellow'>{row['City']}</td>" if search_city and search_city.lower() in row["City"].lower() else f"<td>{row['City']}</td>"
     temp_cell = f"<td>{row['Temperature (°C)']}</td>"
     condition_cell = f"<td>{row['Weather Condition']}</td>"
     html_rows += f"<tr><td>{row['No.']}</td>{city_cell}{temp_cell}{condition_cell}</tr>"
+
 html_table = f"""
 <style>
     table {{
