@@ -2,8 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import streamlit as st
 import pandas as pd
-
-# Define the URLs for each city's weather page on BBC
 city_urls = {
     "New York": "https://www.bbc.com/weather/5128581",
     "Faisalabad": "https://www.bbc.com/weather/1179400",
@@ -36,28 +34,16 @@ city_urls = {
     "Dammam": "https://www.bbc.com/weather/110336",
     "Istanbul": "https://www.bbc.com/weather/745044",
 }
-
-# List to store data for all cities
 all_city_data = []
-
-# Loop through each city and fetch weather data
 for city, url in city_urls.items():
     try:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Extract city name
         city_name = city
-
-        # Extract temperature in Celsius
         temp_tag = soup.find('span', class_='wr-value--temperature--c')
         temperature = temp_tag.text.strip() if temp_tag else "Temperature not found"
-
-        # Extract weather condition
         condition_tag = soup.find('div', class_='wr-day__weather-type-description')
         condition = condition_tag.text.strip() if condition_tag else "Condition not found"
-        
-        # Add icons based on condition using if-else statements
         if "Sunny" in condition:
             condition_with_icon = "☀️ " + condition
         elif "Partly cloudy" in condition:
@@ -85,15 +71,12 @@ for city, url in city_urls.items():
         elif "breeze" in condition:
             condition_with_icon = "🌬️" + condition
         else:
-            condition_with_icon = condition  # No icon if condition doesn't match
-
-        # Append data to the list
+            condition_with_icon = condition  
         all_city_data.append({
             "City": city_name,
             "Temperature (°C)": temperature,
             "Weather Condition": condition_with_icon
         })
-    
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data for {city}: {e}")
         all_city_data.append({
@@ -101,46 +84,25 @@ for city, url in city_urls.items():
             "Temperature (°C)": "N/A",
             "Weather Condition": "N/A"
         })
-
-# Create a DataFrame to display all data
 df = pd.DataFrame(all_city_data)
-
-# Convert "Temperature (°C)" to numeric values, handling non-numeric gracefully
 df["Temperature (°C)"] = pd.to_numeric(df["Temperature (°C)"].str.extract(r'(-?\d+)')[0], errors='coerce')
-
-# Sort the DataFrame by temperature in descending order (from hottest to coolest)
 df = df.sort_values(by="Temperature (°C)", ascending=False, na_position='last')
-
-# Reset the index to fix the numbering
 df = df.reset_index(drop=True)
-
-# Add a numbering column starting from 1
 df['No.'] = range(1, len(df) + 1)
-
-# Reorganize columns to display 'No.' first
 df = df[['No.', 'City', 'Temperature (°C)', 'Weather Condition']]
-
-# Streamlit display setup
 st.title("🌍Current Weather in Some Cities of the World")
-
 st.markdown("<h4 style='font-weight:bold; font-size:20px;'>Search for a City</h4>", unsafe_allow_html=True)
-search_city = st.text_input("")  # Empty label for input
-
-# Filter the DataFrame based on user input
+search_city = st.text_input("")  
 if search_city:
     filtered_df = df[df["City"].str.contains(search_city, case=False, na=False)]
 else:
     filtered_df = df
-
-# Convert the filtered DataFrame to HTML with custom header styling
 html_rows = ""
 for index, row in filtered_df.iterrows():
     city_cell = f"<td style='background-color: yellow'>{row['City']}</td>" if search_city and search_city.lower() in row["City"].lower() else f"<td>{row['City']}</td>"
     temp_cell = f"<td>{row['Temperature (°C)']}</td>"
     condition_cell = f"<td>{row['Weather Condition']}</td>"
     html_rows += f"<tr><td>{row['No.']}</td>{city_cell}{temp_cell}{condition_cell}</tr>"
-
-# Add the HTML table structure with inline CSS for the header
 html_table = f"""
 <style>
     table {{
@@ -171,6 +133,4 @@ html_table = f"""
     </tbody>
 </table>
 """
-
-# Display the styled HTML table with highlighted search results in Streamlit
 st.markdown(html_table, unsafe_allow_html=True)
