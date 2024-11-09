@@ -3,30 +3,48 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import streamlit as st
 from datetime import datetime
+
+# Summary extraction function: select key sentences from the article
+def extract_summary(text, num_sentences=3):
+    sentences = text.split('. ')
+    selected_sentences = [sentence for sentence in sentences if len(sentence.split()) > 10]
+    summary = '. '.join(selected_sentences[:num_sentences]) + '.'
+    return summary if summary.strip() else 'No Summary'
+
+# Scraping function
 def scrape_news(url, max_articles=10):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    headlines = soup.find_all('h2', class_='story__title')[:max_articles] 
+    headlines = soup.find_all('h2', class_='story__title')[:max_articles]
     news_data = []
+
     for headline in headlines:
-        title = headline.get_text().strip()  
-        link = headline.find('a')['href']  
+        title = headline.get_text().strip()
+        link = headline.find('a')['href']
         article_url = f"https://www.dawn.com{link}" if link.startswith('/') else link
         article_response = requests.get(article_url)
         article_soup = BeautifulSoup(article_response.text, 'html.parser')
+
+        # Date Extraction
         date_tag = article_soup.find('span', class_='timestamp--time timeago')
-        if date_tag:
-            full_date = date_tag['title']  
-            date = full_date.split('T')[0]  
-        else:
-            date = 'No Date'
-        summary_tag = article_soup.find('p') 
-        summary = summary_tag.get_text().strip() if summary_tag else 'No Summary'
+        date = date_tag['title'].split('T')[0] if date_tag else 'No Date'
+
+        # Full article text
+        paragraphs = article_soup.find_all('p')
+        full_text = ' '.join(p.get_text().strip() for p in paragraphs)
+
+        # Generate summary
+        summary = extract_summary(full_text)
+
+        # Categorize article
         category = categorize_article(title)
         news_data.append([title, date, summary, category])
+
     return pd.DataFrame(news_data, columns=['Title', 'Publication Date', 'Summary', 'Category'])
+
+# Categorize article by keywords in title
 def categorize_article(title):
-    title = title.lower()  
+    title = title.lower()
     if any(keyword in title for keyword in [
         'amendment', 'un', 'political rights', 'governance', 'politics', 
         'parliament', 'assembly', 'legislation', 'democracy', 'elections', 
@@ -86,23 +104,33 @@ def categorize_article(title):
         return 'Local Incidents'
     else:
         return 'General'
+
+# Streamlit display function
 def display_news():
-    news_url = 'https://www.dawn.com/latest-news' 
-    news_df = scrape_news(news_url, max_articles=20)  
+    news_url = 'https://www.dawn.com/latest-news'
+    news_df = scrape_news(news_url, max_articles=20)
     categories = news_df['Category'].unique()
+    
+    # Sidebar for category and date selection
     selected_category = st.sidebar.selectbox("Select Category", ["All Categories"] + list(categories))
     start_date, end_date = st.sidebar.date_input("Select Date Range", [datetime(2024, 1, 1), datetime.today()])
+    
+    # Filter by category
     if selected_category != "All Categories":
         news_df = news_df[news_df['Category'] == selected_category]
+
+    # Filter by date range
     news_df['Publication Date'] = pd.to_datetime(news_df['Publication Date'], errors='coerce')
     news_df = news_df[(news_df['Publication Date'] >= pd.Timestamp(start_date)) & (news_df['Publication Date'] <= pd.Timestamp(end_date))]
+
+    # Display news
     if news_df.empty:
         st.write("No news articles found with the selected filters.")
     else:
         st.markdown("""
         <style>
         .news-ribbon {
-            background-color: #3776ab;  /* Blue color for ribbon */
+            background-color: #3776ab;
             color: white;
             padding: 10px;
             font-size: 24px;
@@ -113,15 +141,15 @@ def display_news():
             margin-bottom: 20px;
         }
         </style>
-        <div class="news-ribbon">
-            📰 Latest News Articles
-        </div>
+        <div class="news-ribbon">📰 Latest News Articles</div>
         """, unsafe_allow_html=True)
-        for count, (_, row) in enumerate(news_df.iterrows(), start=1):  
-            st.markdown(f"### {count}. **{row['Title']}**") 
+        
+        for count, (_, row) in enumerate(news_df.iterrows(), start=1):
+            st.markdown(f"### {count}. **{row['Title']}**")
             st.write(f"**Published on:** {row['Publication Date'].strftime('%Y-%m-%d')}")
             st.write(f"**Category:** {row['Category']}")
             st.write(f"**Summary:** {row['Summary']}")
-            st.markdown("---")  
+            st.markdown("---")
+
 if __name__ == '__main__':
     display_news()
