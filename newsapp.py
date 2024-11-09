@@ -27,22 +27,65 @@ def scrape_news(url, max_articles=10):
     return pd.DataFrame(news_data, columns=['Title', 'Publication Date', 'Summary', 'Category'])
 def categorize_article(title):
     title = title.lower()  
-    if any(keyword in title for keyword in ['amendment', 'political rights', 'governance', 'politics']):
+    if any(keyword in title for keyword in [
+        'amendment', 'un', 'political rights', 'governance', 'politics', 
+        'parliament', 'assembly', 'legislation', 'democracy', 'elections', 
+        'constitutional', 'senate', 'lawmakers', 'cabinet', 'bills', 'voting'
+    ]):
         return 'Domestic Politics and Governance'
-    elif any(keyword in title for keyword in ['government policies', 'initiative', 'power relief', 'exports']):
+    elif any(keyword in title for keyword in [
+        'government policies', 'initiative', 'power relief', 'exports', 
+        'budget', 'tax', 'subsidy', 'reforms', 'development', 'education policy', 
+        'health policy', 'infrastructure', 'investment', 'economic', 'welfare', 
+        'ministry', 'regulation', 'trade', 'foreign aid', 'public policy', 'housing'
+    ]):
         return 'Government Policies and Initiatives'
-    elif any(keyword in title for keyword in ['kashmir', 'occupied kashmir']):
+    elif any(keyword in title for keyword in [
+        'kashmir', 'occupied kashmir', 'indian-administered kashmir', 
+        'kashmiri', 'line of control', 'loc', 'srinagar', 'pakistani-administered kashmir'
+    ]):
         return 'Kashmir Updates'
-    elif any(keyword in title for keyword in ['us elections', 'donald', 'global implications', 'trump']):
+    elif any(keyword in title for keyword in [
+        'us elections', 'israeli', 'us', 'congress', 'abu dhabi', 'donald', 
+        'global implications', 'trump', 'diplomacy', 'foreign relations', 'embassy', 
+        'ambassador', 'geopolitics', 'nato', 'united nations', 'european union', 
+        'china', 'russia', 'saudi arabia', 'middle east', 'asia-pacific', 'trade war'
+    ]):
         return 'International Relations'
-    elif any(keyword in title for keyword in ['climate change', 'environmental issues', 'pollution', 'air quality']):
-        return 'Climate Change & Environmental Issues '
-    elif any(keyword in title for keyword in ['cricket', 'trophy', 'runners', 'pakistan', 'odi', 'sports']):
+    elif any(keyword in title for keyword in [
+        'climate', 'environment', 'inflation', 'pollution', 'air quality', 
+        'global warming', 'greenhouse gases', 'carbon emissions', 'biodiversity', 
+        'deforestation', 'wildfires', 'conservation', 'renewable energy', 'extreme weather', 
+        'recycling', 'sustainability', 'plastic waste', 'ecosystem', 'natural disaster'
+    ]):
+        return 'Climate Change & Environmental Issues'
+    elif any(keyword in title for keyword in [
+        'cricket', 'trophy', 'runners', 'odi', 'sports', 'football', 'world cup', 
+        'tournament', 'olympics', 'athletics', 'tennis', 'entertainment', 'cinema', 
+        'celebrity', 'movie', 'film', 'concert', 'award', 'series', 'fifa', 'batsman'
+    ]):
         return 'Sports and Entertainment'
-    elif any(keyword in title for keyword in ['international incidents', 'plane', 'flight', 'qantas']):
+    elif any(keyword in title for keyword in [
+        'international', 'plane', 'flight', 'qantas', 'accident', 
+        'natural disaster', 'hurricane', 'earthquake', 'tsunami', 'explosion', 
+        'fire', 'evacuation', 'volcano', 'pandemic', 'emergency response', 
+        'cyber attack', 'protest', 'military action'
+    ]):
         return 'Global Events & International Incidents'
+    elif any(keyword in title for keyword in [
+        'blast', 'terrorism', 'terrorist', 'militants', 'extremism', 
+        'attack', 'suicide bombing', 'radicalization', 'isis', 'al-qaeda', 
+        'hostage', 'insurgency', 'violence', 'mass shooting', 'extremist'
+    ]):
+        return 'Terrorism'
+    elif any(keyword in title for keyword in [
+        'quetta', 'lahore', 'karachi', 'faisalabad', 'sialkot', 'islamabad', 
+        'multan', 'peshawar', 'rawalpindi', 'hyderabad', 'bahawalpur', 'pakistan', 
+        'local news', 'incident', 'street crime', 'robbery', 'police'
+    ]):
+        return 'Local Incidents'
     else:
-        return 'General' 
+        return 'General'
 def display_news():
     news_url = 'https://www.dawn.com/latest-news' 
     news_df = scrape_news(news_url, max_articles=20)  
@@ -74,8 +117,8 @@ def display_news():
             📰 Latest News Articles
         </div>
         """, unsafe_allow_html=True)
-        for idx, row in news_df.iterrows():
-            st.markdown(f"### {idx + 1}. **{row['Title']}**")  
+        for count, (_, row) in enumerate(news_df.iterrows(), start=1):  
+            st.markdown(f"### {count}. **{row['Title']}**") 
             st.write(f"**Published on:** {row['Publication Date'].strftime('%Y-%m-%d')}")
             st.write(f"**Category:** {row['Category']}")
             st.write(f"**Summary:** {row['Summary']}")
