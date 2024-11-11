@@ -53,15 +53,19 @@ for city, url in city_urls.items():
             condition_with_icon = "⛅ " + condition
         elif "Cloudy" in condition or "Overcast" in condition:
             condition_with_icon = "☁️ " + condition
-        elif "Rain" in condition:
+        elif "Showers" in condition:
             condition_with_icon = "🌧️ " + condition
         elif "Light rain" in condition:
-            condition_with_icon = "🌦️ " + condition
-        elif "Heavy rain" in condition:
             condition_with_icon = "🌧️ " + condition
+        elif "Heavy rain" in condition:
+            condition_with_icon = "⛈️ " + condition
         elif "Thunderstorm" in condition:
             condition_with_icon = "⛈️ " + condition
-        elif "Snow" in condition:
+        elif "Thundery showers" in condition:
+            condition_with_icon = "⛈️ " + condition
+        elif "Light snow" in condition:
+            condition_with_icon = "❄️ " + condition
+        elif "Heavy snow" in condition:
             condition_with_icon = "❄️ " + condition
         elif "Fog" in condition or "Mist" in condition:
             condition_with_icon = "🌫️ " + condition
